@@ -41,7 +41,7 @@ void mapZenLoader::loadTiles(int index_) {
 				ofToString(maps.at(index_).zoom) + "/" +
 				ofToString(maps.at(index_).pos.x + x) + "/" +
 				ofToString(maps.at(index_).pos.y + y) +
-				".png", index_);
+				".png?api_key=mapzen-6jNoUjf", index_);
 			//insert your key ;)
 		}
 	}
