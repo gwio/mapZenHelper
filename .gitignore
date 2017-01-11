@@ -1,0 +1,11 @@
+#Ignore everything
+*
+
+!/src
+
+#Whitelist the gitignore itself
+!.gitignore
+
+#Whitelist .cpp and .h files
+!*.h
+!*.cpp
