@@ -11,3 +11,4 @@ _Terrarium format PNG tiles contain raw elevation data in meters, in Web Mercato
 ---
 ![raw](https://c1.staticflickr.com/1/423/32135137881_8f484c642c_z.jpg)
 ![converted](https://c1.staticflickr.com/1/594/31878384940_659b95de0e_z.jpg)
+![normal](https://c1.staticflickr.com/1/302/32115617622_86c03cf354_z.jpg)
