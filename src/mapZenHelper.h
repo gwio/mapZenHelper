@@ -12,7 +12,7 @@ public:
 	mapZenLoader();
 	~mapZenLoader();
 
-	void createMapImage(float, float, int, int, int);
+	void createMapImage(float, float, int, int, int, string);
 	vector<ofImage*>* getMapImagesPtr();
 
 private:
@@ -38,16 +38,17 @@ private:
 		vector<ofImage> tiles;
 		ofVec2f pos;
 		int zoom;
+		int channels;
 	};
 
 
-	void loadTiles(int);
+	void loadTiles(int,string);
 	void addTile(ofImageLoaderEntry& tile);
 
 	vector<mapZenBlock> maps;
 	vector<ofImage*> mapImages;
 	ofVec2f to3857(ofVec2f, float);
-
+	string terrariumUrl, normalUrl;
 
 	//ofxThreadedImageLoader 
 	void loadFromURL(ofVec2f pos, ofImage& image, string url, int index);

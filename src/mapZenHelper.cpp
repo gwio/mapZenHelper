@@ -3,6 +3,7 @@
 //TERRARIUM with extention png in Web Mercator projection, TERRARIUMxTERRARIUM tiles
 #define TERRARIUM 256
 
+
 mapZenLoader::mapZenLoader() {
 	nextID = 0;
 	ofAddListener(ofEvents().update, this, &mapZenLoader::update);
@@ -11,15 +12,23 @@ mapZenLoader::mapZenLoader() {
 	lastUpdate = 0;
 	maps.clear();
 	mapImages.clear();
+
+	terrariumUrl = "http://tile.mapzen.com/mapzen/terrain/v1/terrarium/";
+	normalUrl = "https://tile.mapzen.com/mapzen/terrain/v1/normal/";
 }
 
-void mapZenLoader::createMapImage(float lat_, float lon_, int zoom_, int width_, int heigth_) {
+void mapZenLoader::createMapImage(float lat_, float lon_, int zoom_, int width_, int heigth_, string type_) {
 	mapZenBlock temp;
-	temp.mapImage.allocate((width_ / TERRARIUM) * TERRARIUM, (heigth_ / TERRARIUM) * TERRARIUM, OF_IMAGE_COLOR);
+	if (type_ == "Terrarium") {
+		temp.mapImage.allocate((width_ / TERRARIUM) * TERRARIUM, (heigth_ / TERRARIUM) * TERRARIUM, OF_IMAGE_COLOR);
+	}
+	else if (type_ == "Normal") {
+		temp.mapImage.allocate((width_ / TERRARIUM) * TERRARIUM, (heigth_ / TERRARIUM) * TERRARIUM, OF_IMAGE_COLOR_ALPHA);
+	}
 	temp.tiles.resize((width_ / TERRARIUM) * (heigth_ / TERRARIUM));
 	temp.pos = to3857(ofVec2f(lat_, lon_), zoom_);
 	temp.zoom = zoom_;
-
+	temp.channels = temp.mapImage.getImageType()+2;
 	cout << temp.pos << endl;
 	maps.push_back(temp);
 	mapImages.clear();
@@ -27,17 +36,25 @@ void mapZenLoader::createMapImage(float lat_, float lon_, int zoom_, int width_,
 		mapImages.push_back(&maps.at(i).mapImage);
 	}
 
-	loadTiles(maps.size() - 1);
+	loadTiles(maps.size() - 1, type_);
 }
 
-void mapZenLoader::loadTiles(int index_) {
+void mapZenLoader::loadTiles(int index_, string type_) {
+	string loadUrl;
+	if (type_ == "Terrarium") {
+		loadUrl = terrariumUrl;
+	}
+	else if (type_ == "Normal") {
+		loadUrl = normalUrl;
+	}
+
 	int w = maps.at(index_).mapImage.getWidth();
 	int h = maps.at(index_).mapImage.getHeight();
 	for (int x = 0; x < w / TERRARIUM; x++) {
 		for (int y = 0; y < h / TERRARIUM; y++) {
 			loadFromURL(ofVec2f(x, y),
 				maps.at(index_).tiles[(y* (w / TERRARIUM)) + x],
-				"http://tile.mapzen.com/mapzen/terrain/v1/terrarium/" +
+				loadUrl +
 				ofToString(maps.at(index_).zoom) + "/" +
 				ofToString(maps.at(index_).pos.x + x) + "/" +
 				ofToString(maps.at(index_).pos.y + y) +
@@ -48,25 +65,29 @@ void mapZenLoader::loadTiles(int index_) {
 }
 
 void mapZenLoader::addTile(ofImageLoaderEntry& entry_) {
-
+	int channels = maps.at(entry_.index).channels;
 	unsigned char *pixelData = maps.at(entry_.index).mapImage.getPixels().getData();
-	int imgR, imgG, imgB, imgArr;
-	int pixSize = TERRARIUM * TERRARIUM * 3;
+	int imgR, imgG, imgB, imgA, imgArr;
+	int pixSize = TERRARIUM * TERRARIUM * channels;
 
-	imgArr = (pixSize*(int(maps.at(entry_.index).mapImage.getWidth() / TERRARIUM)*entry_.pos.y)) + ((TERRARIUM * 3)*entry_.pos.x);
+	imgArr = (pixSize*(int(maps.at(entry_.index).mapImage.getWidth() / TERRARIUM)*entry_.pos.y)) + ((TERRARIUM * channels)*entry_.pos.x);
 
 	unsigned char *tileData = entry_.image->getPixels().getData();
 	for (int i = 0; i < TERRARIUM; i++) {
 		for (int j = 0; j < TERRARIUM; j++) {
-			imgR = (j * TERRARIUM * 3) + (i * 3);
+			imgR = (j * TERRARIUM * channels) + (i * channels);
 			imgG = imgR + 1;
 			imgB = imgR + 2;
+			imgA = imgR + 3;
 
-			int offsetRow = imgR % (TERRARIUM * 3);
-			int offsetCol = (imgR / (TERRARIUM * 3))*(maps.at(entry_.index).mapImage.getWidth() * 3);
+			int offsetRow = imgR % (TERRARIUM * channels);
+			int offsetCol = (imgR / (TERRARIUM * channels))*(maps.at(entry_.index).mapImage.getWidth() * channels);
 			pixelData[imgArr + offsetCol + offsetRow] = tileData[imgR];
 			pixelData[imgArr + offsetCol + offsetRow + 1] = tileData[imgG];
 			pixelData[imgArr + offsetCol + offsetRow + 2] = tileData[imgB];
+			if (channels == 4) {
+				pixelData[imgArr + offsetCol + offsetRow + 3] = tileData[imgA];
+			}
 		}
 	}
 	maps.at(entry_.index).mapImage.update();
@@ -161,8 +182,8 @@ void mapZenLoader::update(ofEventArgs & a) {
 	// Load 1 image per update so we don't block the gl thread for too long
 	ofImageLoaderEntry entry;
 	if (images_to_update.tryReceive(entry)) {
-		entry.image->setUseTexture(true);
-		entry.image->update();
+		//entry.image->setUseTexture(true);
+		//entry.image->update();
 		addTile(entry);
 	}
 

@@ -5,12 +5,12 @@ void ofApp::setup() {
 	ofBackground(0, 0, 0);
 
 
-	//latitude, longitude, zoomfactor (1-15 for mapzen?), image size, image size always a factor of 256
+	//latitude, longitude, zoomfactor (1-15 for mapzen?), image size, type ("Terrarium", "Normal") -image size always a factor of 256
 	//allocates ofImage, updates maptiles while loading
-	mapZen.createMapImage(49.829900, 6.731873, 12, 256 * 2, 256 * 2);
+	mapZen.createMapImage(49.829900, 6.731873, 12, 256 * 2, 256 * 2, "Normal");
 
 	for (int i = 0; i < 11; i++) {
-		mapZen.createMapImage(ofRandom(-60.0, 60.0), ofRandom(-180.0, 180.0), ofRandom(6, 10), 256 * 2, 256 * 2);
+		mapZen.createMapImage(ofRandom(-60.0, 60.0), ofRandom(-180.0, 180.0), ofRandom(8, 12), 256 * 2, 256 * 2, "Normal");
 	}
 
 	/*Terrarium format PNG tiles contain raw elevation data in meters,
@@ -20,6 +20,15 @@ void ofApp::setup() {
 	To decode:
 	(red * 256 + green + blue / 256) - 32768
 
+	------
+
+	Normal format PNG tiles are processed elevation data with the the red, green, and blue values corresponding to the direction the pixel “surface” is facing (its XYZ vector),
+	in Web Mercator projection (EPSG:3857). The alpha channel contains quantized elevation data with values suitable for common hypsometric tint ranges.
+
+	red = x vector
+	green = y vector
+	blue = z vector
+	alpha = quantized elevation data
 	*/
 
 }
@@ -32,6 +41,7 @@ void ofApp::update() {
 //--------------------------------------------------------------
 void ofApp::draw() {
 
+	
 	int size = 240;
 	int x, y;
 	for (int i = 0; i < mapZen.getMapImagesPtr()->size(); i++) {
@@ -40,6 +50,7 @@ void ofApp::draw() {
 		mapZen.getMapImagesPtr()->at(i)->draw(x, y, size-5, size-5);
 	}
 
+	ofDrawBitmapString(ofToString(ofGetFrameRate()), 20, 20);
 }
 
 //--------------------------------------------------------------
