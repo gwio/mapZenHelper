@@ -7,10 +7,14 @@ void ofApp::setup() {
 
 	//latitude, longitude, zoomfactor (1-15 for mapzen?), image size, type ("Terrarium", "Normal") -image size always a factor of 256
 	//allocates ofImage, updates maptiles while loading
-	mapZen.createMapImage(49.829900, 6.731873, 12, 256 * 2, 256 * 2, "Normal");
+    
+    //prepare mapZen object to load 12 images
+    mapZen.prepareContainer(12);
+    
+	mapZen.createMapImage(49.829900, 6.731873, 12, 256 * 2, 256 * 2, "Normal", 0);
 
 	for (int i = 0; i < 11; i++) {
-		mapZen.createMapImage(ofRandom(-60.0, 60.0), ofRandom(-180.0, 180.0), ofRandom(8, 12), 256 * 2, 256 * 2, "Normal");
+		mapZen.createMapImage(ofRandom(-60.0, 60.0), ofRandom(-180.0, 180.0), ofRandom(8, 12), 256 * 2, 256 * 2, "Normal", i+1);
 	}
 
 	/*Terrarium format PNG tiles contain raw elevation data in meters,

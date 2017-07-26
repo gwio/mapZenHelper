@@ -1,7 +1,10 @@
 /*Very basic helper addon for mapzen data, loads just terrain tiles at the moment*/
 
+
 #pragma once
 #include "ofMain.h"
+
+#define MZKEY "mapzen-yourkey"
 
 using namespace std;
 
@@ -12,8 +15,9 @@ public:
 	mapZenLoader();
 	~mapZenLoader();
 
-	void createMapImage(float, float, int, int, int, string);
+	void createMapImage(float, float, int, int, int, string, int);
 	vector<ofImage*>* getMapImagesPtr();
+    void prepareContainer(int);
 
 private:
 	// Entry to load.

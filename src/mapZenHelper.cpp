@@ -17,7 +17,11 @@ mapZenLoader::mapZenLoader() {
 	normalUrl = "https://tile.mapzen.com/mapzen/terrain/v1/normal/";
 }
 
-void mapZenLoader::createMapImage(float lat_, float lon_, int zoom_, int width_, int heigth_, string type_) {
+void mapZenLoader::prepareContainer(int size_){
+    maps.resize(size_);
+}
+
+void mapZenLoader::createMapImage(float lat_, float lon_, int zoom_, int width_, int heigth_, string type_, int iterator_) {
 	mapZenBlock temp;
 	if (type_ == "Terrarium") {
 		temp.mapImage.allocate((width_ / TERRARIUM) * TERRARIUM, (heigth_ / TERRARIUM) * TERRARIUM, OF_IMAGE_COLOR);
@@ -30,13 +34,13 @@ void mapZenLoader::createMapImage(float lat_, float lon_, int zoom_, int width_,
 	temp.zoom = zoom_;
 	temp.channels = temp.mapImage.getImageType()+2;
 	cout << temp.pos << endl;
-	maps.push_back(temp);
+	maps.at(iterator_) = temp;
 	mapImages.clear();
 	for (int i = 0; i < maps.size(); i++) {
 		mapImages.push_back(&maps.at(i).mapImage);
 	}
 
-	loadTiles(maps.size() - 1, type_);
+	loadTiles(iterator_, type_);
 }
 
 void mapZenLoader::loadTiles(int index_, string type_) {
@@ -58,7 +62,7 @@ void mapZenLoader::loadTiles(int index_, string type_) {
 				ofToString(maps.at(index_).zoom) + "/" +
 				ofToString(maps.at(index_).pos.x + x) + "/" +
 				ofToString(maps.at(index_).pos.y + y) +
-				".png?api_key=mapzen-6jNoUjf", index_);
+				".png?api_key="+MZKEY, index_);
 			//insert your key ;)
 		}
 	}
