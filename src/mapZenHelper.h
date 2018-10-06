@@ -4,7 +4,7 @@
 #pragma once
 #include "ofMain.h"
 
-#define MZKEY "mapzen-yourkey"
+#define MZKEY "your api"
 
 using namespace std;
 

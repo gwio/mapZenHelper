@@ -3,7 +3,7 @@
 //--------------------------------------------------------------
 void ofApp::setup() {
 	ofBackground(0, 0, 0);
-
+	ofSetFrameRate(60);
 
 	//latitude, longitude, zoomfactor (1-15 for mapzen?), image size, type ("Terrarium", "Normal") -image size always a factor of 256
 	//allocates ofImage, updates maptiles while loading
@@ -12,7 +12,7 @@ void ofApp::setup() {
     mapZen.prepareContainer(12);
     
 	mapZen.createMapImage(49.829900, 6.731873, 12, 256 * 2, 256 * 2, "Normal", 0);
-
+	
 	for (int i = 0; i < 11; i++) {
 		mapZen.createMapImage(ofRandom(-60.0, 60.0), ofRandom(-180.0, 180.0), ofRandom(8, 12), 256 * 2, 256 * 2, "Normal", i+1);
 	}

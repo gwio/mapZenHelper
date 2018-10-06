@@ -13,8 +13,8 @@ mapZenLoader::mapZenLoader() {
 	maps.clear();
 	mapImages.clear();
 
-	terrariumUrl = "http://tile.mapzen.com/mapzen/terrain/v1/terrarium/";
-	normalUrl = "https://tile.mapzen.com/mapzen/terrain/v1/normal/";
+	terrariumUrl = "https://tile.nextzen.org/tilezen/terrain/v1/256/terrarium/";
+	normalUrl = "https://tile.nextzen.org/tilezen/terrain/v1/256/normal/";
 }
 
 void mapZenLoader::prepareContainer(int size_){
@@ -24,7 +24,7 @@ void mapZenLoader::prepareContainer(int size_){
 void mapZenLoader::createMapImage(float lat_, float lon_, int zoom_, int width_, int heigth_, string type_, int iterator_) {
 	mapZenBlock temp;
 	if (type_ == "Terrarium") {
-		temp.mapImage.allocate((width_ / TERRARIUM) * TERRARIUM, (heigth_ / TERRARIUM) * TERRARIUM, OF_IMAGE_COLOR);
+		temp.mapImage.allocate((width_ / TERRARIUM) * TERRARIUM, (heigth_ / TERRARIUM) * TERRARIUM, OF_IMAGE_COLOR_ALPHA);
 	}
 	else if (type_ == "Normal") {
 		temp.mapImage.allocate((width_ / TERRARIUM) * TERRARIUM, (heigth_ / TERRARIUM) * TERRARIUM, OF_IMAGE_COLOR_ALPHA);
